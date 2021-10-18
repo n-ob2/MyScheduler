@@ -3,11 +3,12 @@ plugins {
     id 'kotlin-android'
     id 'kotlin-kapt'
     id 'realm-android'
+    id 'androidx.navigation.safeargs.kotlin'
 }
 
 android {
     compileSdkVersion 31
-    buildToolsVersion "31.0.0"
+    buildToolsVersion '30.0.3'
 
     defaultConfig {
         applicationId "com.example.myscheduler"

@@ -1,10 +1,10 @@
 package com.example.myscheduler
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.myscheduler.databinding.FragmentFirstBinding
@@ -49,6 +49,16 @@ class FirstFragment : Fragment() {
         val adapter = ScheduleAdapter(schedules)    //クエリで取得したデータを渡してアダプタに適用
         binding.list.adapter = adapter  //作ったアダプタのルール通りに表示
 
+        adapter.setOnItemClickListener { id ->  //RecyclerViewがタップされた時に
+            id?.let {
+                val action =
+                    FirstFragmentDirections.actionToScheduleEditFragment(it)    //自動生成されるFirstFragmentDirectionクラスでスケジュールエディットへの遷移アクション「actionToScheduleEditFragment」にIDを渡す
+                findNavController().navigate(action)    //作成したアクションをNavigateメソッドに渡して画面遷移する
+            }
+        }
+
+        (activity as? MainActivity)?.setFabVisible(View.VISIBLE)    //非表示にしていたfabボタンを表示
+
     }   //onViewCreated↑↑
 
     override fun onDestroyView() {
@@ -56,7 +66,7 @@ class FirstFragment : Fragment() {
         _binding = null
     }
 
-    override fun onDestroy{ //activityが破棄されると
+    override fun onDestroy(){ //activityが破棄されると
         super.onDestroy()
         realm.close()   //realmインスタンスを破棄してリソースを解放
     }

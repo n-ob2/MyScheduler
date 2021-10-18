@@ -1,17 +1,24 @@
 package com.example.myscheduler
 
-import androidx.recyclerview.widget.RecyclerView
 //import android.support.v7.widget.RecyclerView
 import android.text.format.DateFormat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
 import io.realm.OrderedRealmCollection
 import io.realm.RealmRecyclerViewAdapter
 
 
-class ScheduleAdapter(data: OrderedRealmCollection<Schedule>):RealmRecyclerViewAdapter<Schedule, ScheduleAdapter.ViewHolder>(data,true) {
+class ScheduleAdapter(data: OrderedRealmCollection<Schedule>):
+    RealmRecyclerViewAdapter<Schedule, ScheduleAdapter.ViewHolder>(data,true) {
+
+    private var listener: ((Long?) -> Unit)? = null     //引数がLong?型(スケジュールのIDを受け取るため)で戻り値がない関数型の変数
+
+    fun setOnItemClickListener(listener:(Long?) -> Unit) {  //変数listenerに登録をする
+        this.listener = listener    //受け取った関数を、セルがタップされた時に備えて変数listenerに格納
+    }
 
     init {
         setHasStableIds(true)   //描画の高速化処理 （定型文）
@@ -34,6 +41,9 @@ class ScheduleAdapter(data: OrderedRealmCollection<Schedule>):RealmRecyclerViewA
         val schedule: Schedule? = getItem(position) //データベースから値を取得
         holder.date.text = DateFormat.format("yyyy/MM/dd HH:mm", schedule?.date)    //取得した値をテキストビューにセット
         holder.title.text = schedule?.title //取得した値をテキストビューにセット
+        holder.itemView.setOnClickListener {    //セルのビューがタップされたら
+            listener?.invoke(schedule?.id)  //スケジュールのIDを渡す
+        }
     }
 
     override fun getItemId(position: Int): Long{    //描画の高速化処理（定型文）
