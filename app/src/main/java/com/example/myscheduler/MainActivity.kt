@@ -18,7 +18,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        setSupportActionBar(binding.toolbar)
+        setSupportActionBar(findViewById(R.id.toolbar))
 
         val navController = findNavController(R.id.nav_host_fragment_content_main)  //画面遷移のナビゲーションを管理する
         appBarConfiguration = AppBarConfiguration(navController.graph)

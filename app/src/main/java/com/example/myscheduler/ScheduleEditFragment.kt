@@ -1,10 +1,10 @@
 package com.example.myscheduler
 
+//import android.icu.text.DateFormat
+//import android.icu.text.SimpleDateFormat
 import android.graphics.Color
-import android.icu.text.DateFormat
-import android.icu.text.SimpleDateFormat
 import android.os.Bundle
-import android.text.format.DateFormat.format
+import android.text.format.DateFormat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,10 +16,9 @@ import com.google.android.material.snackbar.Snackbar
 import io.realm.Realm
 import io.realm.kotlin.createObject
 import io.realm.kotlin.where
-import java.lang.IllegalArgumentException
 import java.text.ParseException
+import java.text.SimpleDateFormat
 import java.util.*
-import java.util.regex.Pattern
 
 /**
  * A simple [Fragment] subclass.
@@ -46,14 +45,14 @@ class ScheduleEditFragment : Fragment() {
         return binding.root
     }
 
-    private val args: ScheduleEditFragmentArgs by navArgs() //1
+    private val args: ScheduleEditFragmentArgs by navArgs() //safeargsで遷移もとから安全に引数を取得
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        if (args.scheduleId != -1L){    //2
-            val schdule = realm.where<Schedule>()   //3
-                .equalTo("id", args.scheduleId).findFirst()
-            binding.dateEdit.setText(DateFormat.format("yyyy/MM/dd", schedule?.date))   //4
+        if (args.scheduleId != -1L){    //スケジュールIDが-1の時は新規登録
+            val schedule = realm.where<Schedule>()
+                .equalTo("id", args.scheduleId).findFirst() //同じIDのレコードを取得して再格納
+            binding.dateEdit.setText(DateFormat.format("yyyy/MM/dd", schedule?.date))   //各項目を表示
             binding.timeEdit.setText(DateFormat.format("HH:mm", schedule?.date))
             binding.titleEdit.setText(schedule?.title)
             binding.detailEdit.setText(schedule?.detail)
@@ -64,7 +63,7 @@ class ScheduleEditFragment : Fragment() {
 
     private fun saveSchedule(view: View){
         when (args.scheduleId) {
-            -1L -> {
+            -1L -> {    //新規登録
 
             realm.executeTransaction { db: Realm -> //トランザクション実行
                 val maxId = db.where<Schedule>().max("id")  //DBのid最大値を取得して
@@ -81,10 +80,10 @@ class ScheduleEditFragment : Fragment() {
                 .setActionTextColor(Color.YELLOW)   //アクションテキストの色決定
                 .show() //スナックバーを表示
         }
-            else -> {
-                realm.executeTransaction{ db: Realm ->  //5
+            else -> {   //更新
+                realm.executeTransaction{ db: Realm ->
                     val schedule =db.where<Schedule>()
-                        .equalTo("id", args.scheduleId).findFirst() //6
+                        .equalTo("id", args.scheduleId).findFirst() //同じIDを探す
                     val date = ("${binding.dateEdit.text}" +
                             "${binding.timeEdit.text}").toDate()
                     if (date != null) schedule?.date = date
