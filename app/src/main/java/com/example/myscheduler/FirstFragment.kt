@@ -57,9 +57,12 @@ class FirstFragment : Fragment() {
             }
         }
 
-        (activity as? MainActivity)?.setFabVisible(View.VISIBLE)    //非表示にしていたfabボタンを表示
-
     }   //onViewCreated↑↑
+
+    override fun onResume() {
+        super.onResume()
+        (activity as? MainActivity)?.setFabVisible(View.VISIBLE)    //非表示にしていたfabボタンを表示
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()
