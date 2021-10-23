@@ -56,9 +56,13 @@ class ScheduleEditFragment : Fragment() {
             binding.timeEdit.setText(DateFormat.format("HH:mm", schedule?.date))
             binding.titleEdit.setText(schedule?.title)
             binding.detailEdit.setText(schedule?.detail)
+            binding.delete.visibility = View.VISIBLE
+        }else{
+            binding.delete.visibility = View.INVISIBLE
         }
         (activity as? MainActivity)?.setFabVisible(View.INVISIBLE)  //fabボタンの非表示
         binding.save.setOnClickListener { saveSchedule(it) }    //保存ボタンをタップした時にsaveScheduleメソッド実行
+        binding.delete.setOnClickListener { deleteSchedule(it) }
     }
 
     private fun saveSchedule(view: View){
@@ -69,7 +73,7 @@ class ScheduleEditFragment : Fragment() {
                 val maxId = db.where<Schedule>().max("id")  //DBのid最大値を取得して
                 val nextId = (maxId?.toLong() ?: 0L) + 1L   //新規作成するスケジュールidは最大値に+1
                 val schedule = db.createObject<Schedule>(nextId)    //データを一行新規追加
-                val date = "$(binding.dateEdit.text) ${binding.timeEdit.text}"  //各値を保存 日付と時間はtoDateメソッドで整形したものを使用
+                val date = "${binding.dateEdit.text} ${binding.timeEdit.text}"  //各値を保存 日付と時間はtoDateメソッドで整形したものを使用
                     .toDate()
                 if (date != null) schedule.date = date
                 schedule.title = binding.titleEdit.text.toString()
@@ -96,6 +100,19 @@ class ScheduleEditFragment : Fragment() {
                     .show()
             }
         }
+    }
+
+    private fun deleteSchedule(view: View){
+        realm.executeTransaction{ db: Realm ->
+            db.where<Schedule>().equalTo("id", args.scheduleId)
+                ?.findFirst()
+                ?.deleteFromRealm() //1
+        }
+        Snackbar.make(view, "削除しました", Snackbar.LENGTH_SHORT)
+            .setActionTextColor(Color.YELLOW)
+            .show()
+
+        findNavController().popBackStack()
     }
 
     override fun onDestroyView() {
