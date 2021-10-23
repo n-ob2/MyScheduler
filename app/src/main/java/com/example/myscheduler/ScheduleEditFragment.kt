@@ -73,8 +73,8 @@ class ScheduleEditFragment : Fragment() {
                 val maxId = db.where<Schedule>().max("id")  //DBのid最大値を取得して
                 val nextId = (maxId?.toLong() ?: 0L) + 1L   //新規作成するスケジュールidは最大値に+1
                 val schedule = db.createObject<Schedule>(nextId)    //データを一行新規追加
-                val date = "${binding.dateEdit.text} ${binding.timeEdit.text}"  //各値を保存 日付と時間はtoDateメソッドで整形したものを使用
-                    .toDate()
+                val date = ("${binding.dateEdit.text}" +
+                        "${binding.timeEdit.text}").toDate()
                 if (date != null) schedule.date = date
                 schedule.title = binding.titleEdit.text.toString()
                 schedule.detail = binding.detailEdit.text.toString()
@@ -88,8 +88,13 @@ class ScheduleEditFragment : Fragment() {
                 realm.executeTransaction{ db: Realm ->
                     val schedule =db.where<Schedule>()
                         .equalTo("id", args.scheduleId).findFirst() //同じIDを探す
-                    val date = ("${binding.dateEdit.text}" +
-                            "${binding.timeEdit.text}").toDate()
+                    val date = ("${binding.dateEdit.text} " + "${binding.timeEdit.text}").toDate()
+                    /*
+                    Log.e("debug", "date;$date")
+                    val result = date is String
+                    Log.e("debug","result;$result")
+                    print(date is String)
+                    */
                     if (date != null) schedule?.date = date
                     schedule?.title = binding.titleEdit.text.toString()
                     schedule?.detail = binding.detailEdit.text.toString()
