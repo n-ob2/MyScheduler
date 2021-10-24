@@ -61,8 +61,25 @@ class ScheduleEditFragment : Fragment() {
             binding.delete.visibility = View.INVISIBLE
         }
         (activity as? MainActivity)?.setFabVisible(View.INVISIBLE)  //fabボタンの非表示
-        binding.save.setOnClickListener { saveSchedule(it) }    //保存ボタンをタップした時にsaveScheduleメソッド実行
-        binding.delete.setOnClickListener { deleteSchedule(it) }
+        binding.save.setOnClickListener {
+            val dialog = ConfirmDialog("保存しますか？",
+                "保存", { saveSchedule(it) },
+            "キャンセル", {
+                Snackbar.make(it, "キャンセルしました。", Snackbar.LENGTH_SHORT)
+                    .show()
+                })
+            dialog.show(parentFragmentManager, "save_dialog")
+        }    //保存ボタンをタップした時にsaveScheduleメソッド実行
+        binding.delete.setOnClickListener {
+            val dialog = ConfirmDialog( //ConfirmDialog(データベースが入ったプロパティ)のインスタンス生成
+                "削除しますか？",
+                "削除", { deleteSchedule(it) },
+                "キャンセル",{
+                    Snackbar.make(it, "キャンセルしました。", Snackbar.LENGTH_SHORT)
+                        .show()
+                })
+            dialog.show(parentFragmentManager, "delete_dialog")
+         }
     }
 
     private fun saveSchedule(view: View){

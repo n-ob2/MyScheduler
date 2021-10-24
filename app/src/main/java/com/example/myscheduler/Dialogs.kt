@@ -12,15 +12,14 @@ class ConfirmDialog(private val message: String,    //丸かっこ内はクラ�
                     private val cancelSelected: () -> Unit )    //キャンセルボタンがタップされた時の関数
     : DialogFragment(){ //DialogFragmentクラスを継承
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {  //ダイアログの中身
-        return super.onCreateDialog(savedInstanceState)
         val builder = AlertDialog.Builder(requireActivity())    //インスタンス生成
-        builder.setMessage(message)
-        builder.setPositiveButton(okLabel) { dialog, wihch ->
-            okSelected()
+        builder.setMessage(message) //定数messageを表示
+        builder.setPositiveButton(okLabel) { dialog, wihch ->   //ボタンをokLabelで表示
+            okSelected()    //タップされたらokSelectedの処理を実行
         }
-        builder.setNegativeButton(cancelLabel){ dialog, which ->
-            cancelSelected()
+        builder.setNegativeButton(cancelLabel){ dialog, which ->    //ボタンをcancelLabelで表示
+            cancelSelected()    //タップされたらcancelSelectedの処理を実行
         }
-        return builder.create()
+        return builder.create() //onCreateDialogの最後にオブジェクトを返す
     }
 }
