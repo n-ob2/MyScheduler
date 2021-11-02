@@ -1,9 +1,14 @@
 package com.example.myscheduler
 
 import android.app.AlertDialog
+import android.app.DatePickerDialog
 import android.app.Dialog
+import android.app.TimePickerDialog
 import android.os.Bundle
+import android.widget.DatePicker
+import android.widget.TimePicker
 import androidx.fragment.app.DialogFragment
+import java.util.*
 
 class ConfirmDialog(private val message: String,    //丸かっこ内はクラスのプロパティ 1行目はダイアログのタイトル
                     private val okLabel: String,
@@ -23,3 +28,37 @@ class ConfirmDialog(private val message: String,    //丸かっこ内はクラ�
         return builder.create() //onCreateDialogの最後にオブジェクトを返す
     }
 }
+
+class DateDialog(private val onSelected: (String) -> Unit)  //日付選択時の処理を受け取るプロパティ
+    : DialogFragment(), DatePickerDialog.OnDateSetListener{ //クラス継承とインターフェース実装
+
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        //return super.onCreateDialog(savedInstanceState)
+        val c = Calendar.getInstance()  //現在の日付を初期値として設定
+        val year = c.get(Calendar.YEAR)
+        val month = c.get(Calendar.MONTH)
+        val date = c.get(Calendar.DATE)
+        return DatePickerDialog(requireActivity(), this, year, month, date) //インスタンスを戻す
+        }
+
+    override fun onDateSet(view: DatePicker?, year: Int, month: Int, dayOfMonth: Int) { //日付設定された時の処理
+        onSelected("$year/${month + 1}/$dayOfMonth")
+
+    }
+}   // DateDialog↑↑
+
+class TimeDialog(private val onSelected: (String) -> Unit)  //処理を受け取るプロパティ実装
+    : DialogFragment(), TimePickerDialog.OnTimeSetListener{ //インターフェース実装
+
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        //return super.onCreateDialog(savedInstanceState)
+        val c = Calendar.getInstance()
+        val hour = c.get(Calendar.HOUR_OF_DAY)
+        val minute = c.get(Calendar.MINUTE)
+        return TimePickerDialog(context, this, hour, minute, true)  //インスタンスを戻す
+    }
+
+    override fun onTimeSet(view: TimePicker?, hourOfDay: Int, minute: Int) {
+        onSelected("%1$02d:%2$02d".format(hourOfDay, minute))   //時間の形式を整えてプロパティに渡す
+    }
+}   //TimeDialog↑↑

@@ -80,7 +80,20 @@ class ScheduleEditFragment : Fragment() {
                 })
             dialog.show(parentFragmentManager, "delete_dialog")
          }
-    }
+
+        binding.dateButton.setOnClickListener {
+            DateDialog{ date -> //インスタンス生成
+            binding.dateEdit.setText(date)  //受け取った日付をdateEditに表示
+            }.show(parentFragmentManager, "date_dialog")    //ダイアログ表示
+        }
+
+        binding.timeButton.setOnClickListener {
+            TimeDialog{ time ->
+                binding.timeEdit.setText(time)
+            }.show(parentFragmentManager, "time_dialog")
+        }
+
+    }   //onViewCreated↑↑
 
     private fun saveSchedule(view: View){
         when (args.scheduleId) {
